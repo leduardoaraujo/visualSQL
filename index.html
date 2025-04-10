@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual SQL Query Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Visual SQL Query Builder</h1>
+        </header>
+        
+        <div class="main-content">
+            <div class="sidebar">
+                <h2>Tabelas Disponíveis</h2>
+                <div class="search-container">
+                    <input 
+                        type="text" 
+                        id="table-search" 
+                        class="search-input" 
+                        placeholder="Pesquisar tabelas..."
+                        aria-label="Pesquisar tabelas"
+                    >
+                    <i class="fas fa-search search-icon"></i>
+                </div>
+                <div id="tables-list" class="tables-list">
+                    <!-- Tabelas serão carregadas dinamicamente aqui -->
+                </div>
+            </div>
+            
+            <div class="query-builder" id="query-builder">
+                <div class="query-area">
+                    <h2>Construtor de Consulta</h2>
+                    <div class="query-controls">
+                        <button id="add-join" class="btn">
+                            <i class="fas fa-link"></i>
+                            Adicionar JOIN
+                        </button>
+                        <button id="add-where" class="btn">
+                            <i class="fas fa-filter"></i>
+                            Adicionar Condição
+                        </button>
+                        <button id="clear-query" class="btn btn-secondary">
+                            <i class="fas fa-trash"></i>
+                            Limpar Consulta
+                        </button>
+                    </div>
+                    <div id="query-canvas" class="query-canvas">
+                        <!-- Área onde os elementos da consulta serão arrastados -->
+                    </div>
+                </div>
+                
+                <div class="preview-area">
+                    <div class="preview-header">
+                        <h2>Prévia da Consulta SQL</h2>
+                        <div class="preview-actions">
+                            <button id="copy-sql" class="btn">
+                                <i class="fas fa-copy"></i>
+                                Copiar SQL
+                            </button>
+                            <button id="export-sql" class="btn">
+                                <i class="fas fa-download"></i>
+                                Exportar
+                            </button>
+                        </div>
+                    </div>
+                    <div id="sql-preview" class="sql-preview">
+                        <!-- SQL gerado será exibido aqui -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para configuração de JOIN -->
+    <div id="join-modal" class="modal">
+        <div class="modal-content">
+            <h3>Configurar JOIN</h3>
+            <div class="join-form">
+                <div class="form-group">
+                    <label>Tabela 1:</label>
+                    <select id="join-table1"></select>
+                </div>
+                <div class="form-group">
+                    <label>Coluna 1:</label>
+                    <select id="join-column1"></select>
+                </div>
+                <div class="form-group">
+                    <label>Tipo de JOIN:</label>
+                    <select id="join-type">
+                        <option value="INNER">INNER JOIN (Combina registros que existem em ambas as tabelas)</option>
+                        <option value="LEFT">LEFT JOIN (Mantém todos os registros da primeira tabela)</option>
+                        <option value="RIGHT">RIGHT JOIN (Mantém todos os registros da segunda tabela)</option>
+                        <option value="FULL">FULL JOIN (Mantém todos os registros de ambas as tabelas)</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tabela 2:</label>
+                    <select id="join-table2"></select>
+                </div>
+                <div class="form-group">
+                    <label>Coluna 2:</label>
+                    <select id="join-column2"></select>
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-join" class="btn btn-secondary">Cancelar</button>
+                <button id="confirm-join" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal para adicionar condição WHERE -->
+    <div id="where-modal" class="modal">
+        <div class="modal-content">
+            <h3>Adicionar Condição</h3>
+            <div class="where-form">
+                <div class="form-group">
+                    <label>Tabela:</label>
+                    <select id="where-table"></select>
+                </div>
+                <div class="form-group">
+                    <label>Coluna:</label>
+                    <select id="where-column"></select>
+                </div>
+                <div class="form-group">
+                    <label>Operador:</label>
+                    <select id="where-operator">
+                        <option value="=">=</option>
+                        <option value=">">></option>
+                        <option value="<"><</option>
+                        <option value=">=">>=</option>
+                        <option value="<="><=</option>
+                        <option value="!=">!=</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Valor:</label>
+                    <input type="text" id="where-value" placeholder="Insira o valor" oninput="validateInput()">
+                </div>
+            </div>
+            <div class="modal-buttons">
+                <button id="cancel-where" class="btn btn-secondary">Cancelar</button>
+                <button id="confirm-where" class="btn btn-primary">Confirmar</button>
+            </div>
+        </div>
+    </div>
+    <div id="notifications" class="notifications"></div>
+    <script type="module" src="js/app.js"></script>
+</body>
+</html>
