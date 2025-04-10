@@ -31,16 +31,41 @@ export class TableList {
         this.container.innerHTML = '';
         this.tables = [];
 
+        // Define um limite de tabelas para decidir se deve expandir ou não
+        const LIMITE_TABELAS_EXPANDIDAS = 3;
+        const deveExpandir = database.tables.length <= LIMITE_TABELAS_EXPANDIDAS;
+
         database.tables.forEach(table => {
             const tableElement = document.createElement('div');
             tableElement.className = 'draggable-table';
             tableElement.draggable = true;
             tableElement.innerHTML = `
-                <strong>${table.name}</strong>
-                <div class="columns">
+                <div class="table-header">
+                    <div class="table-header-left">
+                        <button class="expand-btn ${deveExpandir ? 'expanded' : ''}" title="Expandir/Recolher">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                        <strong>${table.name}</strong>
+                    </div>
+                    <div class="table-header-right" title="Número de colunas">
+                        <i class="fas fa-columns"></i>
+                        ${table.columns.length}
+                    </div>
+                </div>
+                <div class="columns ${deveExpandir ? 'expanded' : ''}">
                     ${table.columns.map(col => `<div>${col}</div>`).join('')}
                 </div>
             `;
+            
+            // Adiciona evento de expansão
+            const expandBtn = tableElement.querySelector('.expand-btn');
+            const columnsDiv = tableElement.querySelector('.columns');
+            
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation(); // Previne que o evento afete o drag and drop
+                expandBtn.classList.toggle('expanded');
+                columnsDiv.classList.toggle('expanded');
+            });
             
             tableElement.addEventListener('dragstart', (e) => {
                 e.dataTransfer.setData('text/plain', table.name);

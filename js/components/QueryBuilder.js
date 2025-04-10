@@ -44,6 +44,10 @@ export class QueryBuilder {
         document.getElementById('export-sql').onclick = () => this.exportSQL();
 
         // Eventos para o modal de JOIN
+        document.getElementById('close-join-modal').onclick = () => {
+            document.getElementById('join-modal').style.display = 'none';
+        };
+
         document.getElementById('cancel-join').onclick = () => {
             document.getElementById('join-modal').style.display = 'none';
         };
@@ -63,14 +67,25 @@ export class QueryBuilder {
         };
 
         document.getElementById('confirm-join').onclick = () => {
+            const selectedType = document.querySelector('input[name="join-type"]:checked');
+            if (!selectedType) {
+                new Notification('Erro', 'Selecione um tipo de JOIN', 'error');
+                return;
+            }
+
             const joinData = {
                 id: `join-${Date.now()}`,
-                type: document.getElementById('join-type').value,
+                type: selectedType.value,
                 table1: document.getElementById('join-table1').value,
                 table2: document.getElementById('join-table2').value,
                 column1: document.getElementById('join-column1').value,
                 column2: document.getElementById('join-column2').value
             };
+
+            if (!joinData.table1 || !joinData.table2 || !joinData.column1 || !joinData.column2) {
+                new Notification('Erro', 'Preencha todos os campos do JOIN', 'error');
+                return;
+            }
 
             this.addJoin(joinData);
             document.getElementById('join-modal').style.display = 'none';
@@ -106,6 +121,7 @@ export class QueryBuilder {
         
         // Botões que devem ser desabilitados quando não há elementos
         const buttons = [
+            'add-join',
             'add-where',
             'clear-query',
             'copy-sql',
@@ -150,7 +166,14 @@ export class QueryBuilder {
         tableElement.innerHTML = `
             <div class="table-header">
                 <strong>${table.name}</strong>
-                <button class="remove-btn" aria-label="Remover tabela">×</button>
+                <div class="table-header-actions">
+                    <button class="table-action-btn select-all-btn" title="Selecionar todas as colunas">
+                        <i class="fas fa-asterisk"></i>
+                    </button>
+                    <button class="table-action-btn remove-btn" title="Remover tabela">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
             <div class="columns">
                 ${table.columns.map(col => `
@@ -164,6 +187,23 @@ export class QueryBuilder {
 
         const removeBtn = tableElement.querySelector('.remove-btn');
         removeBtn.addEventListener('click', () => this.removeTable(table.name, tableElement));
+
+        const selectAllBtn = tableElement.querySelector('.select-all-btn');
+        selectAllBtn.addEventListener('click', () => {
+            const checkboxes = tableElement.querySelectorAll('input[type="checkbox"]');
+            const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+            });
+            
+            this.updateSQLPreview();
+            
+            new Notification(
+                !allChecked ? 'Todas as colunas selecionadas' : 'Todas as colunas desmarcadas',
+                `${!allChecked ? 'Selecionadas' : 'Desmarcadas'} todas as colunas da tabela ${table.name}`
+            );
+        });
 
         const checkboxes = tableElement.querySelectorAll('input[type="checkbox"]');
         checkboxes.forEach(checkbox => {
@@ -220,16 +260,23 @@ export class QueryBuilder {
         }
 
         tables.forEach(table => {
-            const option1 = document.createElement('option');
-            const option2 = document.createElement('option');
-            option1.value = option2.value = table;
-            option1.textContent = option2.textContent = table;
-            table1Select.appendChild(option1);
-            table2Select.appendChild(option2);
+            table1Select.add(new Option(table, table));
+            table2Select.add(new Option(table, table));
         });
+
+        // Seleciona tabelas diferentes por padrão se possível
+        if (tables.length >= 2) {
+            table2Select.selectedIndex = 1;
+        }
 
         this.updateColumnSelects(tables[0], tables[1]);
         modal.style.display = 'block';
+
+        // Reseta a seleção do tipo de JOIN
+        const innerJoinRadio = document.querySelector('input[name="join-type"][value="INNER"]');
+        if (innerJoinRadio) {
+            innerJoinRadio.checked = true;
+        }
     }
 
     updateColumnSelects(table1, table2) {
