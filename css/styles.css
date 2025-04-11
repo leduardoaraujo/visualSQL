@@ -262,7 +262,8 @@ header h1 {
     gap: 30px;
 }
 
-.query-area, .preview-area {
+.query-area,
+.preview-area {
     background-color: white;
     border-radius: 8px;
     padding: 25px;
@@ -996,9 +997,11 @@ header h1 {
     0% {
         opacity: 0.5;
     }
+
     50% {
         opacity: 1;
     }
+
     100% {
         opacity: 0.5;
     }
@@ -1059,13 +1062,93 @@ header h1 {
         flex-direction: column;
         height: auto;
     }
-    
+
     .join-connector {
         height: 50px;
         flex: unset;
     }
-    
+
     .join-type-buttons {
         flex-direction: column;
+    }
+}
+
+/* Estilos para o JOIN com múltiplas conexões */
+.join-connections {
+    margin-top: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.join-connection-item {
+    background-color: #f0f8ff;
+    border: 1px solid #d0e6ff;
+    border-radius: 4px;
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    animation: fadeIn 0.3s ease;
+}
+
+.join-connection-text {
+    font-family: monospace;
+    font-size: 0.9em;
+}
+
+.join-connection-remove {
+    background: none;
+    border: none;
+    color: #ff5252;
+    cursor: pointer;
+    padding: 4px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.join-connection-remove:hover {
+    background-color: #ffeeee;
+}
+
+.table-column.connected {
+    background-color: #e3f2fd;
+    border-left: 3px solid #2196f3;
+}
+
+.join-help-text {
+    margin-top: 12px;
+    font-size: 0.85em;
+    color: #666;
+    font-style: italic;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.join-help-text i {
+    color: #2196f3;
+}
+
+.multiple-connectors .column-connector {
+    opacity: 0.5;
+}
+
+.multiple-connectors .column-connector.active {
+    opacity: 1;
+    z-index: 11;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
     }
 }

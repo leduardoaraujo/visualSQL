@@ -36,7 +36,17 @@ export class SQLService {
         // Adiciona JOINs
         if (this.joins.length > 0) {
             this.joins.forEach(join => {
-                sql += `\n${join.type} JOIN ${join.table2} ON ${join.table1}.${join.column1} = ${join.table2}.${join.column2}`;
+                // Verifica se o join usa o novo formato com múltiplas condições
+                if (join.conditions && Array.isArray(join.conditions)) {
+                    const conditionsString = join.conditions.map(cond =>
+                        `${join.table1}.${cond.table1Column} = ${join.table2}.${cond.table2Column}`
+                    ).join(' AND ');
+
+                    sql += `\n${join.type} JOIN ${join.table2} ON ${conditionsString}`;
+                } else {
+                    // Compatibilidade com formato antigo
+                    sql += `\n${join.type} JOIN ${join.table2} ON ${join.table1}.${join.column1} = ${join.table2}.${join.column2}`;
+                }
             });
         }
 
