@@ -66,26 +66,47 @@ export class QueryBuilder {
             );
         };
 
+        // Eventos para os botões de tipo de JOIN
+        const joinTypeButtons = document.querySelectorAll('.join-type-btn');
+        joinTypeButtons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                // Remove a classe active de todos os botões
+                joinTypeButtons.forEach(btn => btn.classList.remove('active'));
+                // Adiciona a classe active ao botão clicado
+                button.classList.add('active');
+                // Atualiza o tipo de JOIN no indicador
+                const joinType = button.getAttribute('data-join-type');
+                document.getElementById('join-type-indicator').textContent = joinType + ' JOIN';
+                // Atualiza a visualização se houver colunas selecionadas
+                this.updateJoinPreview();
+            });
+        });
+
         document.getElementById('confirm-join').onclick = () => {
-            const selectedType = document.querySelector('input[name="join-type"]:checked');
+            // Obtém o tipo de JOIN selecionado
+            const selectedType = document.querySelector('.join-type-btn.active');
             if (!selectedType) {
                 new Notification('Erro', 'Selecione um tipo de JOIN', 'error');
                 return;
             }
 
-            const joinData = {
-                id: `join-${Date.now()}`,
-                type: selectedType.value,
-                table1: document.getElementById('join-table1').value,
-                table2: document.getElementById('join-table2').value,
-                column1: document.getElementById('join-column1').value,
-                column2: document.getElementById('join-column2').value
-            };
+            // Obtém as colunas selecionadas
+            const table1ColElement = document.querySelector('#table1-columns .table-column.selected');
+            const table2ColElement = document.querySelector('#table2-columns .table-column.selected');
 
-            if (!joinData.table1 || !joinData.table2 || !joinData.column1 || !joinData.column2) {
-                new Notification('Erro', 'Preencha todos os campos do JOIN', 'error');
+            if (!table1ColElement || !table2ColElement) {
+                new Notification('Erro', 'Selecione uma coluna de cada tabela para o JOIN', 'error');
                 return;
             }
+
+            const joinData = {
+                id: `join-${Date.now()}`,
+                type: selectedType.getAttribute('data-join-type'),
+                table1: document.getElementById('join-table1').value,
+                table2: document.getElementById('join-table2').value,
+                column1: table1ColElement.getAttribute('data-column'),
+                column2: table2ColElement.getAttribute('data-column')
+            };
 
             this.addJoin(joinData);
             document.getElementById('join-modal').style.display = 'none';
@@ -269,43 +290,158 @@ export class QueryBuilder {
             table2Select.selectedIndex = 1;
         }
 
+        // Atualiza as colunas nas tabelas visuais
         this.updateColumnSelects(tables[0], tables[1]);
-        modal.style.display = 'block';
-
-        // Reseta a seleção do tipo de JOIN
-        const innerJoinRadio = document.querySelector('input[name="join-type"][value="INNER"]');
-        if (innerJoinRadio) {
-            innerJoinRadio.checked = true;
+        
+        // Reinicia seleção do tipo de JOIN
+        const innerJoinBtn = document.querySelector('.join-type-btn[data-join-type="INNER"]');
+        if (innerJoinBtn) {
+            document.querySelectorAll('.join-type-btn').forEach(btn => btn.classList.remove('active'));
+            innerJoinBtn.classList.add('active');
+            document.getElementById('join-type-indicator').textContent = 'INNER JOIN';
         }
+        
+        // Limpa seleções anteriores
+        document.querySelectorAll('.table-column').forEach(col => col.classList.remove('selected'));
+        document.getElementById('join-preview-text').textContent = 'Selecione as colunas para conectar as tabelas';
+        
+        modal.style.display = 'block';
     }
 
     updateColumnSelects(table1, table2) {
-        const column1Select = document.getElementById('join-column1');
-        const column2Select = document.getElementById('join-column2');
-
-        column1Select.innerHTML = '';
-        column2Select.innerHTML = '';
-
+        // Referências aos containers de colunas
+        const table1Columns = document.getElementById('table1-columns');
+        const table2Columns = document.getElementById('table2-columns');
+        
+        // Limpa os containers
+        table1Columns.innerHTML = '';
+        table2Columns.innerHTML = '';
+        
+        // Atualiza a prévia de JOIN
+        document.getElementById('join-preview-text').textContent = 'Selecione as colunas para conectar as tabelas';
+        
+        if (!table1 || !table2) return;
+        
+        // Obtém as colunas da tabela 1
         const table1Data = database.tables.find(t => t.name === table1);
-        const table2Data = database.tables.find(t => t.name === table2);
-
         if (table1Data) {
-            table1Data.columns.forEach(col => {
-                const option = document.createElement('option');
-                option.value = col;
-                option.textContent = col;
-                column1Select.appendChild(option);
+            table1Data.columns.forEach(column => {
+                const columnElement = this.createColumnElement(column, 'table1');
+                table1Columns.appendChild(columnElement);
             });
         }
-
+        
+        // Obtém as colunas da tabela 2
+        const table2Data = database.tables.find(t => t.name === table2);
         if (table2Data) {
-            table2Data.columns.forEach(col => {
-                const option = document.createElement('option');
-                option.value = col;
-                option.textContent = col;
-                column2Select.appendChild(option);
+            table2Data.columns.forEach(column => {
+                const columnElement = this.createColumnElement(column, 'table2');
+                table2Columns.appendChild(columnElement);
             });
         }
+    }
+    
+    createColumnElement(column, tableId) {
+        const columnElement = document.createElement('div');
+        columnElement.className = 'table-column';
+        columnElement.setAttribute('data-column', column);
+        
+        // Tenta identificar o tipo de coluna (simplificado para este exemplo)
+        let columnType = 'texto';
+        if (column.includes('id') || column.endsWith('_id')) columnType = 'número/id';
+        if (column.includes('data')) columnType = 'data';
+        
+        columnElement.innerHTML = `
+            <span class="table-column-name">${column}</span>
+            <span class="table-column-type">${columnType}</span>
+        `;
+        
+        // Evento de clique
+        columnElement.addEventListener('click', () => {
+            // Remove a seleção anterior no mesmo lado da tabela
+            document.querySelectorAll(`#${tableId}-columns .table-column`).forEach(col => {
+                col.classList.remove('selected');
+            });
+            
+            // Seleciona esta coluna
+            columnElement.classList.add('selected');
+            
+            // Atualiza a prévia do JOIN
+            this.updateJoinPreview();
+        });
+        
+        return columnElement;
+    }
+    
+    updateJoinPreview() {
+        const table1ColElement = document.querySelector('#table1-columns .table-column.selected');
+        const table2ColElement = document.querySelector('#table2-columns .table-column.selected');
+        
+        if (!table1ColElement || !table2ColElement) return;
+        
+        const table1 = document.getElementById('join-table1').value;
+        const table2 = document.getElementById('join-table2').value;
+        const column1 = table1ColElement.getAttribute('data-column');
+        const column2 = table2ColElement.getAttribute('data-column');
+        const joinType = document.querySelector('.join-type-btn.active').getAttribute('data-join-type');
+        
+        document.getElementById('join-preview-text').innerHTML = `
+            <code>${table1}.${column1} ${joinType} JOIN ${table2}.${column2}</code>
+        `;
+        
+        // Desenha a linha de conexão visual
+        this.drawColumnConnector(table1ColElement, table2ColElement);
+    }
+    
+    drawColumnConnector(leftCol, rightCol) {
+        // Remove conectores existentes
+        const existingConnectors = document.querySelectorAll('.column-connector');
+        existingConnectors.forEach(conn => conn.remove());
+        
+        if (!leftCol || !rightCol) return;
+        
+        // Obtém as posições dos elementos
+        const leftRect = leftCol.getBoundingClientRect();
+        const rightRect = rightCol.getBoundingClientRect();
+        const containerRect = document.querySelector('.tables-visual-container').getBoundingClientRect();
+        
+        // Cria o elemento conector
+        const connector = document.createElement('div');
+        connector.className = 'column-connector';
+        
+        // Posiciona o conector
+        const startX = leftRect.right - containerRect.left;
+        const startY = leftRect.top + (leftRect.height / 2) - containerRect.top;
+        const endX = rightRect.left - containerRect.left;
+        const endY = rightRect.top + (rightRect.height / 2) - containerRect.top;
+        
+        // Define a largura e posição
+        const width = endX - startX;
+        connector.style.width = `${width}px`;
+        connector.style.left = `${startX}px`;
+        
+        // Se as linhas estão alinhadas, é uma linha reta
+        if (Math.abs(startY - endY) < 10) {
+            connector.style.top = `${startY}px`;
+            connector.style.height = '2px';
+        } else {
+            // Para linhas não alinhadas, cria um caminho mais complexo (usando pseudo-elementos no CSS)
+            connector.setAttribute('data-start-y', startY);
+            connector.setAttribute('data-end-y', endY);
+            
+            // O ponto médio X
+            const midX = startX + (width / 2);
+            
+            // Adiciona elementos de linha personalizados para criar o caminho
+            connector.innerHTML = `
+                <div class="connector-start" style="top: ${startY - startX}px; height: 2px;"></div>
+                <div class="connector-middle" style="top: ${startY}px; height: ${endY - startY}px; left: ${midX - startX}px;"></div>
+                <div class="connector-end" style="top: ${endY - startX}px; height: 2px;"></div>
+            `;
+        }
+        
+        // Adiciona ao contêiner
+        document.querySelector('.join-connector').appendChild(connector);
     }
 
     showWhereModal() {
@@ -351,11 +487,19 @@ export class QueryBuilder {
         joinLine.innerHTML = `
             <div class="join-info">
                 ${joinData.type} JOIN: ${joinData.table1}.${joinData.column1} = ${joinData.table2}.${joinData.column2}
-                <button class="remove-join" onclick="document.querySelector('.query-builder').removeJoin('${joinData.id}')" aria-label="Remover JOIN">
+                <button class="remove-join" data-join-id="${joinData.id}" aria-label="Remover JOIN">
                     <i class="fas fa-times"></i>
                 </button>
             </div>
         `;
+
+        // Botão de remover join
+        const removeBtn = joinLine.querySelector('.remove-join');
+        if (removeBtn) {
+            removeBtn.addEventListener('click', () => {
+                this.removeJoin(joinData.id);
+            });
+        }
 
         timelineContainer.appendChild(joinLine);
         this.updateSQLPreview();

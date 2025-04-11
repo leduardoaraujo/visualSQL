@@ -833,3 +833,239 @@ header h1 {
     justify-content: flex-end;
     gap: 10px;
 }
+
+/* Novo estilo para o modal JOIN visual */
+.join-type-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.join-type-btn {
+    flex: 1;
+    border: 1px solid #ddd;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+    padding: 10px;
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: all 0.2s ease;
+}
+
+.join-type-btn.active {
+    background-color: #e3f2fd;
+    border-color: #2196f3;
+    box-shadow: 0 0 5px rgba(33, 150, 243, 0.3);
+}
+
+.join-btn-title {
+    font-weight: bold;
+    font-size: 1.1em;
+    margin-bottom: 5px;
+}
+
+.join-btn-desc {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.tables-visual-container {
+    display: flex;
+    align-items: stretch;
+    margin-bottom: 20px;
+    height: 300px;
+}
+
+.table-container {
+    flex: 2;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    background-color: #fff;
+}
+
+.join-connector {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+}
+
+.join-line {
+    width: 80%;
+    height: 2px;
+    background-color: #2196f3;
+    position: relative;
+}
+
+.join-type-indicator {
+    background-color: #e3f2fd;
+    padding: 5px 10px;
+    border-radius: 15px;
+    border: 1px solid #2196f3;
+    font-size: 0.85em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    white-space: nowrap;
+}
+
+.table-selection {
+    margin-bottom: 10px;
+}
+
+.table-columns-container {
+    flex: 1;
+    overflow-y: auto;
+    border: 1px solid #eee;
+    padding: 8px;
+    border-radius: 4px;
+}
+
+.table-column {
+    padding: 6px 10px;
+    margin: 4px 0;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.table-column:hover {
+    background-color: #f8f9fa;
+}
+
+.table-column.selected {
+    background-color: #e3f2fd;
+    border: 1px solid #2196f3;
+    box-shadow: 0 0 4px rgba(33, 150, 243, 0.4);
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+.table-column {
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.table-column-name {
+    font-size: 0.95em;
+}
+
+.table-column-type {
+    font-size: 0.8em;
+    color: #666;
+    font-style: italic;
+}
+
+.column-connector {
+    position: absolute;
+    background-color: #2196f3;
+    height: 2px;
+    z-index: 10;
+    pointer-events: none;
+}
+
+.connector-start,
+.connector-end,
+.connector-middle {
+    position: absolute;
+    background-color: #2196f3;
+}
+
+.connector-middle {
+    width: 2px;
+}
+
+/* Animação para os conectores */
+.column-connector {
+    animation: connectPulse 2s infinite;
+}
+
+@keyframes connectPulse {
+    0% {
+        opacity: 0.5;
+    }
+    50% {
+        opacity: 1;
+    }
+    100% {
+        opacity: 0.5;
+    }
+}
+
+.join-preview {
+    background-color: #f8f9fa;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 12px;
+}
+
+.join-preview h4 {
+    margin: 0 0 8px 0;
+    font-size: 1em;
+    color: #333;
+}
+
+.join-preview-text {
+    font-size: 0.95em;
+    color: #444;
+}
+
+/* Melhoria visual para seleção de coluna */
+.table-column.selected {
+    background-color: #e3f2fd;
+    border: 1px solid #2196f3;
+    box-shadow: 0 0 4px rgba(33, 150, 243, 0.4);
+    transform: scale(1.02);
+    transition: all 0.2s ease;
+}
+
+.table-column {
+    border: 1px solid transparent;
+    transition: all 0.2s ease;
+}
+
+.join-type-indicator {
+    font-weight: bold;
+    white-space: nowrap;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Efeito de hover para botões de tipo de JOIN */
+.join-type-btn:hover {
+    background-color: #f0f8ff;
+    transform: translateY(-2px);
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.join-type-btn.active {
+    transform: translateY(-2px);
+}
+
+/* Responsividade para o modal */
+@media (max-width: 768px) {
+    .tables-visual-container {
+        flex-direction: column;
+        height: auto;
+    }
+    
+    .join-connector {
+        height: 50px;
+        flex: unset;
+    }
+    
+    .join-type-buttons {
+        flex-direction: column;
+    }
+}

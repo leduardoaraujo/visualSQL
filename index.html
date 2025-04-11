@@ -85,58 +85,52 @@
                 </button>
             </div>
             <div class="join-form">
-                <div class="join-tables-section">
-                    <div class="form-group">
-                        <label>Primeira Tabela</label>
-                        <select id="join-table1" class="join-select"></select>
-                        <div class="select-info">Selecione a primeira tabela para o JOIN</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Coluna para Relacionamento</label>
-                        <select id="join-column1" class="join-select"></select>
-                        <div class="select-info">Escolha a coluna para relacionar com a segunda tabela</div>
-                    </div>
+                <div class="join-type-buttons">
+                    <button class="join-type-btn active" data-join-type="INNER">
+                        <span class="join-btn-title">INNER JOIN</span>
+                        <span class="join-btn-desc">Registros em ambas as tabelas</span>
+                    </button>
+                    <button class="join-type-btn" data-join-type="LEFT">
+                        <span class="join-btn-title">LEFT JOIN</span>
+                        <span class="join-btn-desc">Todos da primeira tabela</span>
+                    </button>
+                    <button class="join-type-btn" data-join-type="RIGHT">
+                        <span class="join-btn-title">RIGHT JOIN</span>
+                        <span class="join-btn-desc">Todos da segunda tabela</span>
+                    </button>
                 </div>
-
-                <div class="join-type-section">
-                    <div class="form-group">
-                        <label>Tipo de JOIN</label>
-                        <div class="join-type-options">
-                            <label class="join-type-option">
-                                <input type="radio" name="join-type" value="INNER" checked>
-                                <span class="join-type-content">
-                                    <strong>INNER JOIN</strong>
-                                    <span class="join-type-description">Retorna apenas registros que existem em ambas as tabelas</span>
-                                </span>
-                            </label>
-                            <label class="join-type-option">
-                                <input type="radio" name="join-type" value="LEFT">
-                                <span class="join-type-content">
-                                    <strong>LEFT JOIN</strong>
-                                    <span class="join-type-description">Mantém todos os registros da primeira tabela</span>
-                                </span>
-                            </label>
-                            <label class="join-type-option">
-                                <input type="radio" name="join-type" value="RIGHT">
-                                <span class="join-type-content">
-                                    <strong>RIGHT JOIN</strong>
-                                    <span class="join-type-description">Mantém todos os registros da segunda tabela</span>
-                                </span>
-                            </label>
+                
+                <div class="tables-visual-container">
+                    <div class="table-container table-left">
+                        <div class="table-selection">
+                            <label>Primeira Tabela</label>
+                            <select id="join-table1" class="join-select"></select>
+                        </div>
+                        <div class="table-columns-container" id="table1-columns">
+                            <!-- Colunas da primeira tabela aparecerão aqui -->
+                        </div>
+                    </div>
+                    
+                    <div class="join-connector">
+                        <div class="join-line"></div>
+                        <div class="join-type-indicator" id="join-type-indicator">INNER JOIN</div>
+                    </div>
+                    
+                    <div class="table-container table-right">
+                        <div class="table-selection">
+                            <label>Segunda Tabela</label>
+                            <select id="join-table2" class="join-select"></select>
+                        </div>
+                        <div class="table-columns-container" id="table2-columns">
+                            <!-- Colunas da segunda tabela aparecerão aqui -->
                         </div>
                     </div>
                 </div>
-
-                <div class="join-tables-section">
-                    <div class="form-group">
-                        <label>Segunda Tabela</label>
-                        <select id="join-table2" class="join-select"></select>
-                        <div class="select-info">Selecione a segunda tabela para o JOIN</div>
-                    </div>
-                    <div class="form-group">
-                        <label>Coluna para Relacionamento</label>
-                        <select id="join-column2" class="join-select"></select>
-                        <div class="select-info">Escolha a coluna para relacionar com a primeira tabela</div>
+                
+                <div class="join-preview">
+                    <h4>Configuração do JOIN</h4>
+                    <div class="join-preview-text" id="join-preview-text">
+                        Selecione as colunas para conectar as tabelas
                     </div>
                 </div>
             </div>
