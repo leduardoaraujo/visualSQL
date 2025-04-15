@@ -7,12 +7,17 @@
     <title>Visual SQL Query Builder</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/connections.css">
 </head>
 
 <body>
     <div class="container">
         <header>
             <h1>Visual SQL Query Builder</h1>
+            <button id="disconnect-db" class="btn btn-secondary" style="display: none;">
+                <i class="fas fa-plug"></i>
+                Desconectar
+            </button>
         </header>
 
         <div class="main-content">
@@ -24,7 +29,10 @@
                     <i class="fas fa-search search-icon"></i>
                 </div>
                 <div id="tables-list" class="tables-list">
-                    <!-- Tabelas serão carregadas dinamicamente aqui -->
+                    <div class="no-tables-message" id="no-tables-message">
+                        <i class="fas fa-database"></i>
+                        <p>Conecte-se a um banco de dados para ver as tabelas disponíveis</p>
+                    </div>
                 </div>
             </div>
 
